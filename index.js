@@ -5,10 +5,12 @@ var simplex = new SimplexNoise();
 canvas.width = document.body.clientWidth;
 canvas.height = document.body.clientHeight;
 
+const params = new URLSearchParams(window.location.search);
+
 const numberOfParticles = 1;
 const showParticles = true;
-const particleOpacity = 0.2;
-const particleRadius = 2;
+const particleOpacity = params.get("opacity") || 0.5;
+const particleRadius = params.get("size") || 2;
 const showMouse = true;
 
 const renderDot = (dot) => {
@@ -42,7 +44,7 @@ let particles = []; /*Array(numberOfParticles)
 const spawnParticle = (position) => {
   particles.push({
     position,
-    color: `rgba(255,255,255,${Math.random() * 0.5})`,
+    color: `rgba(255,255,255,${Math.random() * particleOpacity})`,
     radius: particleRadius * Math.random(),
     speed: 1,
     angle: 360 * Math.random(),
@@ -60,17 +62,26 @@ canvas.addEventListener("mousemove", (e) => {
 function update(timestamp) {
   for (let i = 0; i < particles.length; i++) {
     particles[i].position.y +=
-      1 + simplex.noise(i / 10000, (i * timestamp) / 10000);
-    particles[i].position.x += simplex.noise(i / 10000, (i * timestamp) / 2000);
+      1 +
+      simplex.noise(i / 10000, (i + timestamp) / 10000) / 10 +
+      simplex.noise(i / 10000, (i + timestamp) / 100000);
+    particles[i].position.x +=
+      (simplex.noise(i / 10000, (i * i + timestamp) / 2000) /
+        particles[i].radius) *
+        (params.get("octave1") || 1) +
+      simplex.noise(i / 10000, (i + timestamp) / 20000) *
+        (params.get("octave2") || 0.1);
   }
+  // if (Math.random() < 0.1)
   spawnParticle({ x: canvas.width * Math.random(), y: 0 });
-  spawnParticle({ ...mouseDot.position });
-  spawnParticle({ ...mouseDot.position });
-  spawnParticle({ ...mouseDot.position });
+  // spawnParticle({ ...mouseDot.position });
+  // spawnParticle({ ...mouseDot.position });
+  // spawnParticle({ ...mouseDot.position });
 }
 
 function render() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (params.get("clear") !== "false")
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (showParticles) particles.map(renderDot);
   // if (showMouse) renderDot(mouseDot);
 }
