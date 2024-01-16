@@ -2,7 +2,7 @@
 
 `npx serve .`
 
-[Visit localhost:3000](http://localhost:3000)
+[Demo](https://gustavjorlov.github.io/snow-fall)
 
 **Query Parameters**
 
@@ -12,4 +12,4 @@
 - octave1: factor for the faster oscillating octave (default: 1)
 - octave2: factor for the slower oscillating octave (default: 0.1)
 
-For instance: http://localhost:3000/?size=2&clear=false&opacity=0.2&octave1=2.5&octave2=0.4
+For instance: https://gustavjorlov.github.io/snow-fall?size=2&clear=false&opacity=0.2&octave1=2.5&octave2=0.4
